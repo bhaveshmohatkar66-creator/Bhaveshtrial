@@ -1,0 +1,1116 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Energy Cost Calculator</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            background:
+                radial-gradient(circle at top left, #1e3a8a, transparent 35%),
+                radial-gradient(circle at bottom right, #312e81, transparent 35%),
+                #020617;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .card {
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen text-white p-6">
+
+<div class="max-w-7xl mx-auto">
+
+    <!-- HEADER -->
+
+    <div class="mb-8">
+
+        <p class="text-blue-400 font-semibold tracking-wider">
+            SMART HOME
+        </p>
+
+        <h1 class="text-4xl font-bold mt-1">
+            ⚡ Energy Cost Calculator
+        </h1>
+
+        <p class="text-gray-400 mt-2">
+            Calculate appliance energy consumption and electricity cost
+        </p>
+
+    </div>
+
+
+    <div class="grid lg:grid-cols-3 gap-6">
+
+
+        <!-- LEFT SIDE -->
+
+        <div class="glass rounded-3xl p-6">
+
+            <h2 class="text-xl font-bold mb-5">
+                ➕ Add Appliance
+            </h2>
+
+
+            <div class="space-y-4">
+
+
+                <!-- Appliance -->
+
+                <div>
+
+                    <label class="text-sm text-gray-400">
+                        Appliance
+                    </label>
+
+                    <select
+                        id="appliance"
+                        onchange="loadBrands()"
+                        class="w-full mt-2 p-3 rounded-xl bg-slate-800 border border-slate-700">
+
+                        <option value="">
+                            Select Appliance
+                        </option>
+
+                        <option value="Fan">
+                            Fan
+                        </option>
+
+                        <option value="AC">
+                            Air Conditioner
+                        </option>
+
+                        <option value="TV">
+                            Television
+                        </option>
+
+                        <option value="Fridge">
+                            Refrigerator
+                        </option>
+
+                        <option value="Cooler">
+                            Air Cooler
+                        </option>
+
+                        <option value="Washing Machine">
+                            Washing Machine
+                        </option>
+
+                        <option value="Bulb">
+                            LED Bulb
+                        </option>
+
+                        <option value="Geyser">
+                            Geyser
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- COMPANY -->
+
+                <div>
+
+                    <label class="text-sm text-gray-400">
+                        Company / Brand
+                    </label>
+
+                    <select
+                        id="brand"
+                        onchange="setWatt()"
+                        disabled
+                        class="w-full mt-2 p-3 rounded-xl bg-slate-800 border border-slate-700">
+
+                        <option value="">
+                            Select Company
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- WATT -->
+
+                <div>
+
+                    <label class="text-sm text-gray-400">
+                        Power Consumption (Watt)
+                    </label>
+
+                    <input
+                        id="power"
+                        type="number"
+                        placeholder="Automatic"
+                        class="w-full mt-2 p-3 rounded-xl bg-slate-800 border border-slate-700">
+
+                </div>
+
+
+                <!-- USAGE MODE -->
+
+                <div>
+
+                    <label class="text-sm text-gray-400">
+                        Usage Unit
+                    </label>
+
+                    <select
+                        id="usageUnit"
+                        onchange="changeUsageUnit()"
+                        class="w-full mt-2 p-3 rounded-xl bg-slate-800 border border-slate-700">
+
+                        <option value="hours">
+                            Hours / Day
+                        </option>
+
+                        <option value="minutes">
+                            Minutes / Day
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- USAGE -->
+
+                <div>
+
+                    <label
+                        id="usageLabel"
+                        class="text-sm text-gray-400">
+
+                        Usage Per Day (Hours)
+
+                    </label>
+
+                    <input
+                        id="usage"
+                        type="number"
+                        placeholder="e.g. 5"
+                        class="w-full mt-2 p-3 rounded-xl bg-slate-800 border border-slate-700">
+
+                </div>
+
+
+                <!-- RATE -->
+
+                <div>
+
+                    <label class="text-sm text-gray-400">
+                        Electricity Rate (₹ / kWh)
+                    </label>
+
+                    <input
+                        id="rate"
+                        type="number"
+                        value="8"
+                        class="w-full mt-2 p-3 rounded-xl bg-slate-800 border border-slate-700">
+
+                </div>
+
+
+
+                <!-- QUANTITY -->
+                <div>
+                    <label class="text-sm text-gray-400">Quantity</label>
+                    <input id="quantity" type="number" value="1" min="1"
+                        class="w-full mt-2 p-3 rounded-xl bg-slate-800 border border-slate-700"
+                        placeholder="e.g. 2">
+                </div>
+
+                <button
+                    onclick="addAppliance()"
+                    class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold">
+
+                    Add Appliance +
+
+                </button>
+
+            </div>
+
+
+            <!-- LIST -->
+
+            <div class="mt-8">
+
+                <h3 class="font-semibold mb-4">
+                    Added Appliances
+                </h3>
+
+                <div id="applianceList">
+
+                    <p class="text-sm text-gray-500 text-center py-5">
+                        No appliances added
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT SIDE -->
+
+        <div class="lg:col-span-2 space-y-6">
+
+
+            <!-- STAT CARDS -->
+
+            <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+
+
+                <div class="glass card rounded-2xl p-5">
+
+                    <p class="text-gray-400 text-sm">
+                        Appliances
+                    </p>
+
+                    <p id="totalAppliances"
+                       class="text-3xl font-bold mt-2">
+                        0
+                    </p>
+
+                </div>
+
+
+                <div class="glass card rounded-2xl p-5">
+
+                    <p class="text-gray-400 text-sm">
+                        Daily Energy
+                    </p>
+
+                    <p id="dailyUsage"
+                       class="text-3xl font-bold mt-2">
+                        0 kWh
+                    </p>
+
+                </div>
+
+
+                <div class="glass card rounded-2xl p-5">
+
+                    <p class="text-gray-400 text-sm">
+                        Monthly Energy
+                    </p>
+
+                    <p id="monthlyUsage"
+                       class="text-3xl font-bold mt-2">
+                        0 kWh
+                    </p>
+
+                </div>
+
+
+                <div class="glass card rounded-2xl p-5">
+
+                    <p class="text-gray-400 text-sm">
+                        Monthly Bill
+                    </p>
+
+                    <p id="monthlyBill"
+                       class="text-3xl font-bold mt-2">
+                        ₹0
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- BILL + HIGHEST -->
+
+            <div class="grid md:grid-cols-2 gap-6">
+
+
+                <div class="glass rounded-3xl p-6">
+
+                    <p class="text-gray-400">
+                        Estimated Monthly Bill
+                    </p>
+
+                    <p id="bigBill"
+                       class="text-5xl font-bold mt-3">
+                        ₹0
+                    </p>
+
+                </div>
+
+
+                <div class="glass rounded-3xl p-6">
+
+                    <p class="text-gray-400">
+                        🔥 Highest Consumer
+                    </p>
+
+                    <p id="highest"
+                       class="text-3xl font-bold mt-3">
+                        -
+                    </p>
+
+                    <p id="highestUsage"
+                       class="text-gray-400 mt-2">
+                        0 kWh / month
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+
+            <!-- CHART -->
+
+            <div class="glass rounded-3xl p-6">
+
+                <h2 class="text-xl font-bold">
+                    Energy Consumption
+                </h2>
+
+                <p class="text-sm text-gray-400 mb-5">
+                    Monthly consumption by appliance
+                </p>
+
+                <div class="h-72">
+
+                    <canvas id="energyChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+            <!-- TIPS -->
+
+            <div class="glass rounded-3xl p-6">
+
+                <h2 class="text-xl font-bold">
+                    💡 Energy Saving Tips
+                </h2>
+
+                <div class="grid md:grid-cols-3 gap-4 mt-5">
+
+
+                    <div class="bg-slate-800 rounded-2xl p-4">
+
+                        <div class="text-2xl">
+                            🧺
+                        </div>
+
+                        <h3 class="font-semibold mt-2">
+                            Washing Machine
+                        </h3>
+
+                        <p class="text-sm text-gray-400">
+                            Run full loads instead of multiple small cycles.
+                        </p>
+
+                    </div>
+
+
+                    <div class="bg-slate-800 rounded-2xl p-4">
+
+                        <div class="text-2xl">
+                            ❄️
+                        </div>
+
+                        <h3 class="font-semibold mt-2">
+                            AC
+                        </h3>
+
+                        <p class="text-sm text-gray-400">
+                            Keep AC temperature around 24–26°C.
+                        </p>
+
+                    </div>
+
+
+                    <div class="bg-slate-800 rounded-2xl p-4">
+
+                        <div class="text-2xl">
+                            🔌
+                        </div>
+
+                        <h3 class="font-semibold mt-2">
+                            Standby Power
+                        </h3>
+
+                        <p class="text-sm text-gray-400">
+                            Switch appliances off when not needed.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* ===============================
+   APPLIANCE DATABASE
+================================ */
+
+const applianceData = {
+
+    Fan: {
+        "Havells": 75,
+        "Crompton": 70,
+        "Usha": 65,
+        "Orient": 75,
+        "Bajaj": 70
+    },
+
+    AC: {
+        "LG": 1500,
+        "Samsung": 1600,
+        "Voltas": 1400,
+        "Daikin": 1300,
+        "Blue Star": 1500
+    },
+
+    TV: {
+        "Samsung": 120,
+        "LG": 100,
+        "Sony": 110,
+        "TCL": 90,
+        "MI": 100
+    },
+
+    Fridge: {
+        "LG": 200,
+        "Samsung": 180,
+        "Whirlpool": 190,
+        "Godrej": 200,
+        "Haier": 180
+    },
+
+    Cooler: {
+        "Symphony": 200,
+        "Bajaj": 180,
+        "Crompton": 190,
+        "Usha": 200
+    },
+
+    "Washing Machine": {
+        "LG": 500,
+        "Samsung": 550,
+        "Whirlpool": 500,
+        "IFB": 550,
+        "Bosch": 600
+    },
+
+    Bulb: {
+        "Philips": 9,
+        "Wipro": 9,
+        "Havells": 10,
+        "Syska": 9,
+        "Crompton": 10
+    },
+
+    Geyser: {
+        "AO Smith": 2000,
+        "Racold": 2000,
+        "Bajaj": 2000,
+        "Havells": 2500
+    }
+
+};
+
+
+let appliances = [];
+
+let chart;
+
+
+/* ===============================
+   LOAD BRANDS
+================================ */
+
+function loadBrands() {
+
+    const appliance =
+        document.getElementById("appliance").value;
+
+    const brand =
+        document.getElementById("brand");
+
+    const power =
+        document.getElementById("power");
+
+
+    brand.innerHTML =
+        '<option value="">Select Company</option>';
+
+    power.value = "";
+
+
+    if (!appliance) {
+
+        brand.disabled = true;
+
+        return;
+
+    }
+
+
+    brand.disabled = false;
+
+
+    Object.keys(applianceData[appliance])
+        .forEach(company => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = company;
+
+            option.textContent = company;
+
+            brand.appendChild(option);
+
+        });
+
+}
+
+
+/* ===============================
+   AUTO WATT
+================================ */
+
+function setWatt() {
+
+    const appliance =
+        document.getElementById("appliance").value;
+
+    const brand =
+        document.getElementById("brand").value;
+
+
+    if (appliance && brand) {
+
+        document.getElementById("power").value =
+            applianceData[appliance][brand];
+
+    }
+
+}
+
+
+/* ===============================
+   HOURS / MINUTES SWITCH
+================================ */
+
+function changeUsageUnit() {
+
+    const unit =
+        document.getElementById("usageUnit").value;
+
+    const label =
+        document.getElementById("usageLabel");
+
+    const input =
+        document.getElementById("usage");
+
+
+    if (unit === "minutes") {
+
+        label.innerText =
+            "Usage Per Day (Minutes)";
+
+        input.placeholder =
+            "e.g. 45";
+
+    } else {
+
+        label.innerText =
+            "Usage Per Day (Hours)";
+
+        input.placeholder =
+            "e.g. 5";
+
+    }
+
+}
+
+
+/* ===============================
+   ADD APPLIANCE
+================================ */
+
+function addAppliance() {
+
+    const appliance =
+        document.getElementById("appliance").value;
+
+    const brand =
+        document.getElementById("brand").value;
+
+    const power =
+        parseFloat(
+            document.getElementById("power").value
+        );
+
+    const usage =
+        parseFloat(
+            document.getElementById("usage").value
+        );
+
+    const unit =
+        document.getElementById("usageUnit").value;
+
+    const rate =
+        parseFloat(
+            document.getElementById("rate").value
+        );
+
+    const quantity =
+        parseInt(
+            document.getElementById("quantity").value
+        ) || 1;
+
+
+    if (
+        !appliance ||
+        !brand ||
+        isNaN(power) ||
+        isNaN(usage) ||
+        isNaN(rate) ||
+        quantity <= 0
+    ) {
+
+        alert("Please enter all details!");
+
+        return;
+
+    }
+
+
+    if (power <= 0 || usage <= 0 || rate <= 0) {
+
+        alert("Please enter valid values!");
+
+        return;
+
+    }
+
+
+    /* Convert usage to hours */
+
+    let hoursPerDay;
+
+
+    if (unit === "minutes") {
+
+        hoursPerDay = usage / 60;
+
+    } else {
+
+        hoursPerDay = usage;
+
+    }
+
+
+    /* Energy calculation */
+
+    const dailyEnergy =
+        (power * hoursPerDay) / 1000;
+
+
+    const monthlyEnergy =
+        dailyEnergy * 30;
+
+
+    const monthlyCost =
+        monthlyEnergy * rate;
+
+
+    appliances.push({
+
+        appliance: appliance,
+
+        brand: brand,
+
+        power: power,
+
+        usage: usage,
+
+        unit: unit,
+
+        hoursPerDay: hoursPerDay,
+
+        dailyEnergy: dailyEnergy,
+
+        monthlyEnergy: monthlyEnergy,
+
+        monthlyCost: monthlyCost
+
+    });
+
+
+    /* Reset */
+
+    document.getElementById("appliance").value = "";
+
+    document.getElementById("brand").innerHTML =
+        '<option value="">Select Company</option>';
+
+    document.getElementById("brand").disabled = true;
+
+    document.getElementById("power").value = "";
+
+    document.getElementById("quantity").value = "1";
+
+    document.getElementById("usage").value = "";
+
+
+    updateDashboard();
+
+}
+
+
+/* ===============================
+   REMOVE
+================================ */
+
+function removeAppliance(index) {
+
+    appliances.splice(index, 1);
+
+    updateDashboard();
+
+}
+
+
+/* ===============================
+   DASHBOARD
+================================ */
+
+function updateDashboard() {
+
+    const list =
+        document.getElementById("applianceList");
+
+
+    list.innerHTML = "";
+
+
+    if (appliances.length === 0) {
+
+        list.innerHTML = `
+            <p class="text-sm text-gray-500 text-center py-5">
+                No appliances added
+            </p>
+        `;
+
+    }
+
+
+    appliances.forEach((item, index) => {
+
+        const usageText =
+            item.unit === "minutes"
+            ? item.usage + " min/day"
+            : item.usage + " hr/day";
+
+
+        list.innerHTML += `
+
+            <div class="bg-slate-800 rounded-xl p-4 mb-3">
+
+                <div class="flex justify-between gap-3">
+
+                    <div>
+
+                        <p class="font-semibold">
+                            ${item.appliance}
+                        </p>
+
+                        <p class="text-xs text-blue-400">
+                            ${item.brand}
+                        </p>
+
+                        <p class="text-xs text-gray-400 mt-1">
+                            ${item.power}W × ${item.quantity || 1} • ${usageText}
+                        </p>
+
+                    </div>
+
+                    <div class="text-right">
+
+                        <p class="text-blue-400 font-semibold">
+                            ₹${item.monthlyCost.toFixed(0)}
+                        </p>
+
+                        <p class="text-xs text-gray-500">
+                            ${item.monthlyEnergy.toFixed(2)} kWh
+                        </p>
+
+                        <div class="flex gap-3 justify-end">
+                            <button
+                                onclick="editAppliance(${index})"
+                                class="text-xs text-yellow-400 mt-1">
+                                Edit
+                            </button>
+                            <button
+                                onclick="removeAppliance(${index})"
+                                class="text-xs text-red-400 mt-1">
+                                Remove
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+    });
+
+
+    calculateTotals();
+
+}
+
+
+/* ===============================
+   TOTALS
+================================ */
+
+function calculateTotals() {
+
+    let daily = 0;
+
+    let monthly = 0;
+
+    let bill = 0;
+
+
+    appliances.forEach(item => {
+
+        daily += item.dailyEnergy;
+
+        monthly += item.monthlyEnergy;
+
+        bill += item.monthlyCost;
+
+    });
+
+
+    document.getElementById("totalAppliances")
+        .innerText = appliances.length;
+
+
+    document.getElementById("dailyUsage")
+        .innerText =
+        daily.toFixed(2) + " kWh";
+
+
+    document.getElementById("monthlyUsage")
+        .innerText =
+        monthly.toFixed(2) + " kWh";
+
+
+    document.getElementById("monthlyBill")
+        .innerText =
+        "₹" + bill.toFixed(0);
+
+
+    document.getElementById("bigBill")
+        .innerText =
+        "₹" + bill.toFixed(0);
+
+
+    /* Highest consumer */
+
+    let highest = null;
+
+
+    appliances.forEach(item => {
+
+        if (
+            !highest ||
+            item.monthlyEnergy >
+            highest.monthlyEnergy
+        ) {
+
+            highest = item;
+
+        }
+
+    });
+
+
+    if (highest) {
+
+        document.getElementById("highest")
+            .innerText =
+            highest.appliance +
+            " (" +
+            highest.brand +
+            ")";
+
+
+        document.getElementById("highestUsage")
+            .innerText =
+            highest.monthlyEnergy.toFixed(2) +
+            " kWh / month";
+
+    } else {
+
+        document.getElementById("highest")
+            .innerText = "-";
+
+        document.getElementById("highestUsage")
+            .innerText =
+            "0 kWh / month";
+
+    }
+
+
+    updateChart();
+
+}
+
+
+
+/* ===============================
+   CHART
+================================ */
+
+function updateChart() {
+
+    const labels =
+        appliances.map(item =>
+            item.appliance +
+            " - " +
+            item.brand
+        );
+
+
+    const values =
+        appliances.map(item =>
+            item.monthlyEnergy
+        );
+
+
+    const ctx =
+        document.getElementById("energyChart");
+
+
+    if (chart) {
+
+        chart.destroy();
+
+    }
+
+
+    chart = new Chart(ctx, {
+
+        type: "bar",
+
+        data: {
+
+            labels: labels,
+
+            datasets: [{
+
+                label: "Monthly Energy (kWh)",
+
+                data: values,
+
+                borderRadius: 8
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            plugins: {
+
+                legend: {
+
+                    labels: {
+
+                        color: "white"
+
+                    }
+
+                }
+
+            },
+
+            scales: {
+
+                x: {
+
+                    ticks: {
+
+                        color: "#94a3b8"
+
+                    }
+
+                },
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+
+                        color: "#94a3b8"
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
+
