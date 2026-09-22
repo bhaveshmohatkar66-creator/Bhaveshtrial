@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhavesh Mohatkar IT25074</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .form-box {
+            background: white;
+            width: 400px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .gender {
+            display: flex;
+            gap: 15px;
+        }
+
+        .gender input {
+            width: auto;
+        }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            margin-top: 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-box">
+        <h2>Student Registration</h2>
+
+        <form id="registrationForm">
+
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="Enter your name">
+
+            <label>Email</label>
+            <input type="email" id="email" placeholder="Enter your email">
+
+            <label>Mobile Number</label>
+            <input type="text" id="mobile" placeholder="Enter mobile number">
+
+            <label>Date of Birth</label>
+            <input type="date" id="dob">
+
+            <label>Gender</label>
+            <div class="gender">
+                <label>
+                    <input type="radio" name="gender" value="Male"> Male
+                </label>
+
+                <label>
+                    <input type="radio" name="gender" value="Female"> Female
+                </label>
+            </div>
+
+            <label>Course</label>
+            <select id="course">
+                <option value="">Select Course</option>
+                <option value="B.Tech">B.Tech</option>
+                <option value="BCA">BCA</option>
+                <option value="BBA">BBA</option>
+                <option value="MCA">MCA</option>
+            </select>
+
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter password">
+
+            <button type="submit">Register</button>
+
+            <p id="message"></p>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("registrationForm").addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            let name = document.getElementById("name").value;
+            let email = document.getElementById("email").value;
+            let mobile = document.getElementById("mobile").value;
+            let dob = document.getElementById("dob").value;
+            let course = document.getElementById("course").value;
+            let password = document.getElementById("password").value;
+            let gender = document.querySelector('input[name="gender"]:checked');
+            let message = document.getElementById("message");
+
+            if (name === "" || email === "" || mobile === "" ||
+                dob === "" || course === "" || password === "" || !gender) {
+
+                message.innerHTML = "Please fill all fields!";
+                message.style.color = "red";
+                return;
+            }
+
+            if (mobile.length !== 10 || isNaN(mobile)) {
+                message.innerHTML = "Enter a valid 10-digit mobile number!";
+                message.style.color = "red";
+                return;
+            }
+
+            if (password.length < 6) {
+                message.innerHTML = "Password must contain at least 6 characters!";
+                message.style.color = "red";
+                return;
+            }
+
+            message.innerHTML = "Registration Successful!";
+            message.style.color = "green";
+
+            document.getElementById("registrationForm").reset();
+        });
+    </script>
+
+</body>
+</html>
+
